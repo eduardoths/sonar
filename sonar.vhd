@@ -20,8 +20,7 @@ entity sonar is
 		  hex2:			 out std_logic_vector(6 downto 0);
 		  hex3:			 out std_logic_vector(6 downto 0);
 		  hex4:			 out std_logic_vector(6 downto 0);
-		  hex5:			 out std_logic_vector(6 downto 0);
-		  db_alerta_proximidade: out std_logic
+		  hex5:			 out std_logic_vector(6 downto 0)
     ); 
 end entity;
 
@@ -98,7 +97,6 @@ architecture estrutural of sonar is
 	signal posicao, estado_hcsr04, estado_tx_sonar, estado_tx, estado_rx: std_logic_vector(3 downto 0);
 	signal estado_sonar: std_logic_vector(3 downto 0);
 	signal mux0, mux1, mux2, mux3, mux4, mux5 : std_logic_vector(3 downto 0);
-	signal s_alerta_proximidade : std_logic;
 begin
 
 	U1_FD: sonar_fd 
@@ -114,7 +112,7 @@ begin
 			s_pronto_sensor, 
 			s_pronto_servo, 
 			saida_serial, 
-			s_alerta_proximidade, 
+			alerta_proximidade, 
 			distancia2, 
 			distancia1, 
 			distancia0, 
@@ -157,7 +155,4 @@ begin
 	U12_HEX3: hex7seg port map("00" & sel_mux, hex3);
 	U13_HEX4: hex7seg port map(mux4, hex4);
 	U14_HEX5: hex7seg port map(mux5, hex5);
-	
-	db_alerta_proximidade <= s_alerta_proximidade;
-	alerta_proximidade <= s_alerta_proximidade;
 end architecture;
