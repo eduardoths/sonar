@@ -57,9 +57,16 @@ architecture estrutural of sonar is
 	
 	component sonar_uc
 	 port ( 
-		clock, reset, ligar, pronto_sensor, pronto_servo: 		 in  std_logic;
-		medir, conta, zera, transmitir: out std_logic;
-		db_estado:  out std_logic_vector(3 downto 0)
+		clock: 					in  std_logic;
+		reset: 					in  std_logic;
+		ligar: 					in  std_logic;
+		pronto_sensor:			in  std_logic;
+		pronto_servo: 		 	in  std_logic;
+		medir:					out std_logic;
+		conta:					out std_logic;
+		zera:						out std_logic;
+		transmitir: 			out std_logic;
+		db_estado:  			out std_logic_vector(3 downto 0)
     );
 	end component;
 	
@@ -94,36 +101,61 @@ architecture estrutural of sonar is
 	signal s_alerta_proximidade : std_logic;
 begin
 
-	U1_FD: sonar_fd port map (clock, s_zera, s_conta, s_transmitir, s_medir, echo, trigger, pwm,
-									 s_pronto_sensor, s_pronto_servo, saida_serial, s_alerta_proximidade, distancia2, distancia1, distancia0, angulo2, angulo1, angulo0, posicao, estado_hcsr04, estado_tx, estado_rx, estado_tx_sonar);
+	U1_FD: sonar_fd 
+		port map (
+			clock, 
+			s_zera, 
+			s_conta, 
+			s_transmitir, 
+			s_medir, 
+			echo, 
+			trigger, 
+			pwm,
+			s_pronto_sensor, 
+			s_pronto_servo, 
+			saida_serial, 
+			s_alerta_proximidade, 
+			distancia2, 
+			distancia1, 
+			distancia0, 
+			angulo2, 
+			angulo1, 
+			angulo0, 
+			posicao, 
+			estado_hcsr04, 
+			estado_tx, 
+			estado_rx, 
+			estado_tx_sonar
+		);
 															
 						
-	U2_uc: sonar_uc port map (clock, reset, ligar, s_pronto_sensor,
-										s_pronto_servo, s_medir, s_conta, s_zera, s_transmitir, estado_sonar);
+	U2_uc: sonar_uc 
+		port map (
+			clock, 
+			reset, 
+			ligar, 
+			s_pronto_sensor,
+			s_pronto_servo, 
+			s_medir, 
+			s_conta, 
+			s_zera, 
+			s_transmitir, 
+			estado_sonar
+		);
+		
 	-- MUX
 	U3_MUX0: mux_4x1_n port map(distancia0, "0000", "0000", angulo0, sel_mux, mux0);
-	
 	U4_MUX1: mux_4x1_n port map(distancia1, "0000", "0000", angulo1, sel_mux, mux1);
-	
 	U5_MUX2: mux_4x1_n port map(distancia2, estado_rx, "0000", angulo2, sel_mux, mux2);
-	
-	--U6_MUX3: mux_4x1_n port map("0000", "0000", "0000", "0000", sel_mux, mux3);
-	
-	U7_MUX4: mux_4x1_n port map(estado_hcsr04, "0000","0000" ,"0000", sel_mux, mux4);
-	
-	U8_MUX5: mux_4x1_n port map(posicao, estado_tx, estado_tx_sonar, estado_sonar, sel_mux, mux5);
+	U6_MUX4: mux_4x1_n port map(estado_hcsr04, "0000","0000" ,"0000", sel_mux, mux4);
+	U7_MUX5: mux_4x1_n port map(posicao, estado_tx, estado_tx_sonar, estado_sonar, sel_mux, mux5);
 	
 	-- HEX
-	U9_HEX0: hex7seg port map(mux0, hex0);
-	
+	U9_HEX0:  hex7seg port map(mux0, hex0);
 	U10_HEX1: hex7seg port map(mux1, hex1);
-	
 	U11_HEX2: hex7seg port map(mux2, hex2);
-	
 	U12_HEX3: hex7seg port map("00" & sel_mux, hex3);
-	
 	U13_HEX4: hex7seg port map(mux4, hex4);
-	
 	U14_HEX5: hex7seg port map(mux5, hex5);
 	
 	db_alerta_proximidade <= s_alerta_proximidade;
