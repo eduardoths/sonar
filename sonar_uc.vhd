@@ -20,7 +20,7 @@ end entity;
 
 architecture uc_arch of sonar_uc is
 
-    type tipo_estado is (inicial, preparacao, mede, transmite, wait0);
+    type tipo_estado is (desligado, preparacao, mede, transmite, wait0);
     signal Eatual: tipo_estado;  -- estado atual
     signal Eprox:  tipo_estado;  -- proximo estado
 
@@ -30,9 +30,9 @@ begin
     process (reset, clock, ligar)
     begin
         if reset = '1' then
-            Eatual <= inicial;
+            Eatual <= desligado;
 		  elsif ligar = '0' then
-		      Eatual <= inicial;
+		      Eatual <= desligado;
         elsif clock'event and clock = '1' then
             Eatual <= Eprox; 
         end if;
@@ -42,11 +42,11 @@ begin
 	process (ligar, Eatual, pronto_sensor, pronto_servo) 
 	begin
 		case Eatual is
-			when inicial =>          
+			when desligado =>          
 				if ligar='1' then 
 					Eprox <= preparacao;
 				else 
-					Eprox <= inicial;
+					Eprox <= desligado;
 				end if;
 
 			when preparacao => 
@@ -70,7 +70,7 @@ begin
 				end if;
 
 			when others => 
-				Eprox <= inicial;
+				Eprox <= desligado;
 		end case;
 	end process;
 
@@ -93,7 +93,7 @@ begin
          
 	 -- saida de depuracao
 	 with Eatual select db_estado <= 
-		"0000" when inicial,
+		"0000" when desligado,
 		"0001" when preparacao,
 		"0010" when mede,
 		"0011" when transmite,
