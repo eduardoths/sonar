@@ -52,45 +52,40 @@ set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VHDL_FILE utils/rom_8x24.vhd
+set_global_assignment -name VHDL_FILE utils/registrador_n.vhd
+set_global_assignment -name VHDL_FILE utils/mux_8x1_n.vhd
+set_global_assignment -name VHDL_FILE utils/mux_4x1_n.vhd
+set_global_assignment -name VHDL_FILE utils/hex7seg.vhd
+set_global_assignment -name VHDL_FILE utils/gerador_pulso.vhd
+set_global_assignment -name VHDL_FILE utils/edge_detector_up.vhd
+set_global_assignment -name VHDL_FILE utils/edge_detector_down.vhd
+set_global_assignment -name VHDL_FILE utils/edge_detector.vhd
+set_global_assignment -name VHDL_FILE utils/deslocador_n.vhd
+set_global_assignment -name VHDL_FILE utils/contadorg_updown_m.vhd
+set_global_assignment -name VHDL_FILE utils/contadorg_m.vhd
+set_global_assignment -name VHDL_FILE utils/contador_m.vhd
+set_global_assignment -name VHDL_FILE utils/contador_bcd_4digitos.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/uart_8N2.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_serial_tick_uc.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_serial_8E2_fd.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_serial_8E2.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_dados_sonar_uc.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_dados_sonar_fd.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/tx_dados_sonar.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/rx_serial_tick_uc.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/rx_serial_8N2_uc.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/rx_serial_8N2_fd.vhd
+set_global_assignment -name VHDL_FILE tx_dados_sonar/rx_serial_8N2.vhd
+set_global_assignment -name VHDL_FILE interface_hcsr04/interface_hcsr04_uc.vhd
+set_global_assignment -name VHDL_FILE interface_hcsr04/interface_hcsr04_fd.vhd
+set_global_assignment -name VHDL_FILE interface_hcsr04/interface_hcsr04.vhd
 set_global_assignment -name VHDL_FILE sonar_uc.vhd
 set_global_assignment -name VHDL_FILE sonar_fd.vhd
 set_global_assignment -name VHDL_FILE sonar.vhd
-set_global_assignment -name VHDL_FILE rx_serial_tick_uc.vhd
-set_global_assignment -name VHDL_FILE rom_8x24.vhd
-set_global_assignment -name VHDL_FILE mux_4x1_n.vhd
 set_global_assignment -name VHDL_FILE movimentacao_servomotor.vhd
-set_global_assignment -name VHDL_FILE interface_hcsr04_uc.vhd
-set_global_assignment -name VHDL_FILE interface_hcsr04_fd.vhd
-set_global_assignment -name VHDL_FILE interface_hcsr04.vhd
-set_global_assignment -name VHDL_FILE hex7seg.vhd
-set_global_assignment -name VHDL_FILE gerador_pulso.vhd
-set_global_assignment -name VHDL_FILE exp4_sensor_desafio.vhd
-set_global_assignment -name VHDL_FILE exp4_sensor.vhd
-set_global_assignment -name VHDL_FILE edge_detector_up.vhd
-set_global_assignment -name VHDL_FILE edge_detector_down.vhd
-set_global_assignment -name VHDL_FILE controle_servo_3.vhd
 set_global_assignment -name VHDL_FILE controla_servo_e_interface.vhd
-set_global_assignment -name VHDL_FILE contador_bcd_4digitos.vhd
-set_global_assignment -name VHDL_FILE uart_8N2.vhd
-set_global_assignment -name VHDL_FILE tx_serial_tick_uc.vhd
-set_global_assignment -name VHDL_FILE tx_serial_8E2_fd.vhd
-set_global_assignment -name VHDL_FILE tx_serial_8E2.vhd
-set_global_assignment -name VHDL_FILE tx_dados_sonar_uc.vhd
-set_global_assignment -name VHDL_FILE tx_dados_sonar_fd.vhd
-set_global_assignment -name VHDL_FILE tx_dados_sonar.vhd
-set_global_assignment -name VHDL_FILE teste_tx_dados_sonar.vhd
-set_global_assignment -name VHDL_FILE teste_movimentacao_servomotor.vhd
-set_global_assignment -name VHDL_FILE rx_serial_8N2_uc.vhd
-set_global_assignment -name VHDL_FILE rx_serial_8N2_fd.vhd
-set_global_assignment -name VHDL_FILE rx_serial_8N2.vhd
-set_global_assignment -name VHDL_FILE registrador_n.vhd
-set_global_assignment -name VHDL_FILE mux_8x1_n.vhd
-set_global_assignment -name VHDL_FILE edge_detector.vhd
-set_global_assignment -name VHDL_FILE deslocador_n.vhd
 set_global_assignment -name VHDL_FILE controle_servo.vhd
-set_global_assignment -name VHDL_FILE contador_m.vhd
-set_global_assignment -name VHDL_FILE contadorg_updown_m.vhd
-set_global_assignment -name VHDL_FILE contadorg_m.vhd
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

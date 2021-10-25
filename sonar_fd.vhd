@@ -1,6 +1,8 @@
 library ieee;
+library tx_dados_sonar;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use tx_dados_sonar.all;
 
 entity sonar_fd is 
     port( 
