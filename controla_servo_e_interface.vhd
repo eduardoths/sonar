@@ -75,34 +75,8 @@ architecture estrutural of controla_servo_e_interface is
 		);
 	end component;
 	
-	signal s_medida : std_logic_vector(11 downto 0);
-	signal s_rom: std_logic_vector(23 downto 0);
-	signal s_posicao: std_logic_vector(2 downto 0);
+
 
 begin
-	
-	U1_IH: interface_hcsr04 port map (clock, reset, medir, echo,
-										  trigger, s_medida, pronto_sensor, db_estado);
-	
-	U2_MS: movimentacao_servomotor port map (clock, reset, conta, s_posicao, pwm, db_pwm, pronto_servo);
-																  
-				
-	U3_ROM: rom_8x24 port map(s_posicao, s_rom);
-	
-	-- distancia
-	distancia0 <= "0011" & s_medida(3 downto 0);
-	distancia1 <= "0011" & s_medida(7 downto 4);
-	distancia2 <= "0011" & s_medida(11 downto 8);
-	
-	-- angulo
-	angulo2 <= s_rom(23 downto 16);
-	angulo1 <= s_rom(15 downto 8);
-	angulo0 <= s_rom(7 downto 0);
-	
-	-- posicao
-	posicao <= s_posicao;
-	
-	
-   -- depuracao	
-	db_echo <= echo;
+
 end architecture;

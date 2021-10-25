@@ -1,8 +1,11 @@
 library ieee;
-library tx_dados_sonar;
+library interface_hcsr04;
+library utils;
+use utils.all;
+use interface_hcsr04.all;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use tx_dados_sonar.all;
+use IEEE.math_real.all;
 
 entity sonar_fd is 
     port( 
@@ -55,33 +58,54 @@ architecture estrutural of sonar_fd is
 		); 
 	end component;
 	
-	component controla_servo_e_interface
+	component interface_hcsr04 
 		port ( 
-			clock:      		in  std_logic;  
-			reset:      		in  std_logic; 
-			echo:       		in  std_logic; 
-			conta:   			in  std_logic; 
-			medir:				in  std_logic;
-			trigger:    		out std_logic; 
-			distancia0: 		out std_logic_vector(7 downto 0); -- digitos da medida 
-			distancia1:       out std_logic_vector(7 downto 0);  
-			distancia2:       out std_logic_vector(7 downto 0); 
-			angulo0:       	out std_logic_vector(7 downto 0); 
-			angulo1:       	out std_logic_vector(7 downto 0); 
-			angulo2:      		out std_logic_vector(7 downto 0); 
-			pwm:           	out std_logic; 
-			pronto_sensor:    out std_logic; 
-			pronto_servo:		out std_logic;
-			posicao:       	out std_logic_vector(2 downto 0);
-			db_estado:  		out std_logic_vector(3 downto 0);
-			db_echo:    		out std_logic; 
-			db_pwm:        	out std_logic
+		clock:     in  std_logic;  
+		reset:     in  std_logic; 
+		medir:     in  std_logic; 
+		echo:      in  std_logic; 
+		trigger:   out std_logic; 
+		medida:    out std_logic_vector(11 downto 0);
+		pronto:    out std_logic; 
+		db_estado: out std_logic_vector(3 downto 0)
     ); 
-	end component; 
+	end component;
+
+	component movimentacao_servomotor 
+		port ( 
+        clock:         	in  std_logic;  
+        reset:         	in  std_logic; 
+        ligar:   	 	  	in  std_logic;
+        posicao:       	out std_logic_vector (2 downto 0);
+        pwm:           	out std_logic; 
+		  pronto1s:		  	out std_logic
+		);
+	end component;
+
+	component contadorg_m 
+		generic (
+			constant M: integer := 50 -- modulo do contador
+		);
+		port (
+			clock, zera_as, zera_s, conta: in std_logic;
+			Q: out std_logic_vector (natural(ceil(log2(real(M))))-1 downto 0);
+			fim, meio: out std_logic 
+		);
+	end component;
+	
+	component rom_8x24 
+		port ( 
+        endereco: in  std_logic_vector(2 downto 0);
+        saida   : out std_logic_vector(23 downto 0)
+		);
+	end component;
   
   signal s_angulo2, s_angulo1, s_angulo0: std_logic_vector(7 downto 0);
   signal s_distancia1, s_distancia0, s_distancia2: std_logic_vector(7 downto 0);
-  signal s_posicao: std_logic_vector(2 downto 0);
+
+  	signal s_medida : std_logic_vector(11 downto 0);
+	signal s_rom: std_logic_vector(23 downto 0);
+	signal s_posicao: std_logic_vector(2 downto 0);
 begin
 
 	U1_TX: tx_dados_sonar 
@@ -102,27 +126,42 @@ begin
 			estado_tx_sonar,
 			estado_tx,
 			estado_rx
-		);
-											  
-	U2_SI: controla_servo_e_interface 
-		port map(
+		);						  
+	
+	U1_IH: interface_hcsr04 
+		port map (
 			clock, 
 			reset, 
-			echo, 
-			conta, 
 			medir, 
-			trigger,
-			s_distancia0, 
-			s_distancia1, 
-			s_distancia2, 
-			s_angulo0,
-			s_angulo1, 
-			s_angulo2, 
-			pwm, 
+			echo,
+			trigger, 
+			s_medida, 
 			pronto_sensor, 
-			pronto_servo,
+			estado_hcsr04
+		);
+	
+	U2_MS: movimentacao_servomotor 
+		port map (
+			clock, 
+			reset, 
+			conta, 
 			s_posicao, 
-			estado_hcsr04);
+			pwm, 
+			pronto_servo
+		);
+																  
+				
+	U3_ROM: rom_8x24 port map(s_posicao, s_rom);
+	
+	-- distancia
+	s_distancia0 <= x"3" & s_medida(3 downto 0);
+	s_distancia1 <= x"3" & s_medida(7 downto 4);
+	s_distancia2 <= x"3" & s_medida(11 downto 8);
+	
+	-- angulo
+	s_angulo2 <= s_rom(23 downto 16);
+	s_angulo1 <= s_rom(15 downto 8);
+	s_angulo0 <= s_rom(7 downto 0);
 															
 	alerta_proximidade <= 
 		'1' when (s_distancia1 = "00110001" or s_distancia1 = "00110000") and s_distancia2 = "00110000" 

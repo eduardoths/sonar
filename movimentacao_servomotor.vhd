@@ -9,7 +9,6 @@ entity movimentacao_servomotor is
     clock : in std_logic;
 	 ligar : in std_logic;
     posicao : out std_logic_vector(2 downto 0);
-	 db_pwm : out std_logic;
     pwm : out std_logic;
 	 pronto1s: out std_logic
   );
@@ -92,7 +91,6 @@ begin
   );
 
   pwm <= s_pwm;
-  db_pwm <= s_pwm;
   posicao <= s_Q;
   pronto1s <= s_fim;
 end architecture;
