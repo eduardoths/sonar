@@ -6,9 +6,6 @@ entity tx_dados_sonar is
 		clock:           	in  std_logic; 
 		reset:           	in  std_logic; 
 		transmitir:      	in  std_logic; 
-		angulo2:         	in  std_logic_vector(7 downto 0); -- digitos BCD 
-		angulo1:         	in  std_logic_vector(7 downto 0); -- de angulo 
-		angulo0:         	in  std_logic_vector(7 downto 0); 
 		distancia2:      	in  std_logic_vector(7 downto 0); -- e de distancia  
 		distancia1:      	in  std_logic_vector(7 downto 0); 
 		distancia0:      	in  std_logic_vector(7 downto 0); 
@@ -30,9 +27,6 @@ architecture arch of tx_dados_sonar is
 			zera:					in  std_logic; -- sinal de controle
 			enviar_tx:			in  std_logic; -- sinal de controle
 			incrementar_j:		in  std_logic; -- sinal de controle
-			angulo2:         	in  std_logic_vector(7 downto 0); -- digitos BCD 
-			angulo1:         	in  std_logic_vector(7 downto 0); -- de angulo 
-			angulo0:         	in  std_logic_vector(7 downto 0); 
 			distancia2:      	in  std_logic_vector(7 downto 0); -- e de distancia  
 			distancia1:      	in  std_logic_vector(7 downto 0); 
 			distancia0:      	in  std_logic_vector(7 downto 0); 

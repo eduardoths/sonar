@@ -8,9 +8,6 @@ entity tx_dados_sonar_fd is
 		zera:					in  std_logic; -- sinal de controle
 		enviar_tx:			in  std_logic; -- sinal de controle
 		incrementar_j:		in  std_logic; -- sinal de controle
-		angulo2:         	in  std_logic_vector(7 downto 0); -- digitos BCD 
-		angulo1:         	in  std_logic_vector(7 downto 0); -- de angulo 
-		angulo0:         	in  std_logic_vector(7 downto 0); 
 		distancia2:      	in  std_logic_vector(7 downto 0); -- e de distancia  
 		distancia1:      	in  std_logic_vector(7 downto 0); 
 		distancia0:      	in  std_logic_vector(7 downto 0); 
@@ -52,7 +49,7 @@ architecture arch of tx_dados_sonar_fd is
 		 );
 	end component;
 	
-	component mux_8x1_n is
+	component mux_4x1_n is
 		generic (
 			constant BITS: integer := 4
 		);
@@ -61,16 +58,12 @@ architecture arch of tx_dados_sonar_fd is
 			D1 :     in  std_logic_vector (BITS-1 downto 0);
 			D2 :     in  std_logic_vector (BITS-1 downto 0);
 			D3 :     in  std_logic_vector (BITS-1 downto 0);
-			D4 :     in  std_logic_vector (BITS-1 downto 0);
-			D5 :     in  std_logic_vector (BITS-1 downto 0);
-			D6 :     in  std_logic_vector (BITS-1 downto 0);
-			D7 :     in  std_logic_vector (BITS-1 downto 0);
 			SEL:     in  std_logic_vector (2 downto 0);
 			MUX_OUT: out std_logic_vector (BITS-1 downto 0)
 		);
 	end component;
 	
-	signal s_j: std_logic_vector(2 downto 0);
+	signal s_j: std_logic_vector(1 downto 0);
 	signal s_dados_envio : std_logic_vector(7 downto 0);
 	
 	-- uart_8N2
@@ -79,9 +72,6 @@ architecture arch of tx_dados_sonar_fd is
 	-- mux
 	signal s_ang2, s_ang1, s_ang0, s_d2, s_d1, s_d0: std_logic_vector(7 downto 0);
 begin
-	s_ang2 <= angulo2;
-	s_ang1 <= angulo1;
-	s_ang0 <= angulo0;
 	s_d2 <=   distancia2;
 	s_d1 <=   distancia1;
 	s_d0 <=   distancia0;
@@ -103,8 +93,8 @@ begin
 
 	j: contador_m
 		generic map (
-			M => 8,
-			N => 3
+			M => 4,
+			N => 2
 		)
 		port map (
 			clock => clock,
@@ -117,14 +107,10 @@ begin
 	mux: mux_8x1_n
 		generic map (BITS => 8)
 		port map (
-			D0 			=> s_ang2,
-			D1			=> s_ang1,
-			D2			=> s_ang0,
-			D3			=> "00101100",
-			D4			=> s_d2,
-			D5			=> s_d1,
-			D6			=> s_d0,
-			D7			=> "00101110",
+			D0			=> s_d2,
+			D1			=> s_d1,
+			D2			=> s_d0,
+			D3			=> "00101110",
 			SEL 		=> s_j,
 			MUX_OUT 	=> s_dados_envio
 		);
