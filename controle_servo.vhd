@@ -16,7 +16,7 @@ entity controle_servo is
 port (
       clock    : in  std_logic;
       reset    : in  std_logic;
-      posicao  : in  std_logic_vector(2 downto 0);  --  00=0,  01=1ms  10=1.5ms  11=2ms
+      posicao  : in  std_logic;  --  00=0,  01=1ms  10=1.5ms  11=2ms
       pwm      : out std_logic
 		);
 end controle_servo;
@@ -58,14 +58,8 @@ begin
   process(posicao)
   begin
     case posicao is
-      when "000" =>    s_posicao <=    50000;  -- pulso de  1ms
-      when "001" =>    s_posicao <=    57150;  -- pulso de  1,143ms
-      when "010" =>    s_posicao <=    64300;  -- pulso de  1,286ms
-      when "011" =>    s_posicao <=    71450;  -- pulso de 	1,429ms
-      when "100" =>    s_posicao <=    78550;  -- pulso de 	1,571ms
-      when "101" =>    s_posicao <=    85700;  -- pulso de  1,714ms
-      when "110" =>    s_posicao <=    92850;  -- pulso de  1,857ms
-      when "111" =>    s_posicao <=   100000;  -- pulso de  2ms
+      when '0' =>    s_posicao <=    50000;  -- pulso de  1ms
+      when '1' =>    s_posicao <=   100000;  -- pulso de  2ms
 		when others =>  s_posicao <=       	 0;  -- nulo   saida 0
     end case;
   end process;  

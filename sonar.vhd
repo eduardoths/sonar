@@ -1,57 +1,50 @@
 library ieee;
-library utils;
-use utils.all;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity sonar is 
     port( 
-        clock:        in  std_logic; 
-        reset:        in  std_logic; 
-        ligar:        in  std_logic; 
-        echo:         in  std_logic; 
-		  sel_mux:		 in  std_logic_vector(1 downto 0);
-        trigger:      out std_logic;  
-        pwm:          out std_logic; 
-        saida_serial: out std_logic;
-		  alerta_proximidade: out std_logic;
-		  hex0:			 out std_logic_vector(6 downto 0);
-		  hex1:			 out std_logic_vector(6 downto 0);
-		  hex2:			 out std_logic_vector(6 downto 0);
-		  hex3:			 out std_logic_vector(6 downto 0);
-		  hex4:			 out std_logic_vector(6 downto 0);
-		  hex5:			 out std_logic_vector(6 downto 0)
+        clock:        		in  std_logic; 
+        reset:        		in  std_logic; 
+        ligar:        		in  std_logic; 
+        echo:         		in  std_logic; 
+		entrada_serial:		in  std_logic;
+        trigger:      		out std_logic;  
+        pwm:          		out std_logic; 
+        saida_serial: 		out std_logic;
+		hex0:			 	out std_logic_vector(6 downto 0);
+		hex1:			 	out std_logic_vector(6 downto 0);
+		hex2:			 	out std_logic_vector(6 downto 0);
+		hex3:			 	out std_logic_vector(6 downto 0);
+		hex4:			 	out std_logic_vector(6 downto 0);
+		hex5:			 	out std_logic_vector(6 downto 0)
     ); 
 end entity;
 
 architecture estrutural of sonar is
 
 	component sonar_fd
-		 port( 
-        clock:        			in  std_logic; 
-        reset:        			in  std_logic; 
-        conta:        			in  std_logic; 
-		  transmitir:   			in  std_logic;
-		  medir:			 			in  std_logic;
-        echo:         			in  std_logic; 
-        trigger:      			out std_logic;  
-        pwm:          			out std_logic; 
-		  pronto_sensor: 			out std_logic;
-		  pronto_servo: 			out std_logic;
-        saida_serial: 			out std_logic;
-		  alerta_proximidade: 	out std_logic;
-		  distancia2:				out std_logic_vector(3 downto 0);	
-		  distancia1:				out std_logic_vector(3 downto 0);
-		  distancia0:				out std_logic_vector(3 downto 0);
-		  angulo2:					out std_logic_vector(3 downto 0);
-		  angulo1:					out std_logic_vector(3 downto 0);
-		  angulo0:					out std_logic_vector(3 downto 0);
-		  posicao:					out std_logic_vector(3 downto 0);
-		  estado_hcsr04:			out std_logic_vector(3 downto 0);
-		  estado_tx:				out std_logic_vector(3 downto 0);
-		  estado_rx:				out std_logic_vector(3 downto 0);
-		  estado_tx_sonar:		out std_logic_vector(3 downto 0)
-		 ); 
+		port( 
+			clock:        			in  std_logic; 
+			reset:        			in  std_logic; 
+			conta:        			in  std_logic; 
+			transmitir:   			in  std_logic;
+			medir:			 		in  std_logic;
+			entrada_serial:			in  std_logic;
+			echo:         			in  std_logic; 
+			trigger:      			out std_logic;  
+			pwm:          			out std_logic; 
+			pronto_sensor: 			out std_logic;
+			pronto_servo: 			out std_logic;
+			saida_serial: 			out std_logic;
+			distancia2:				out std_logic_vector(3 downto 0);	
+			distancia1:				out std_logic_vector(3 downto 0);
+			distancia0:				out std_logic_vector(3 downto 0);
+			estado_hcsr04:			out std_logic_vector(3 downto 0);
+			estado_tx:				out std_logic_vector(3 downto 0);
+			estado_rx:				out std_logic_vector(3 downto 0);
+			estado_tx_sonar:		out std_logic_vector(3 downto 0)
+		); 
 	end component;
 	
 	component sonar_uc
@@ -93,10 +86,8 @@ architecture estrutural of sonar is
 	signal s_zera, s_conta, s_transmitir, s_medir, s_pronto_sensor, s_pronto_servo: std_logic;
 	signal s_d0, s_d1, s_d2, s_d3 : std_logic_vector(3 downto 0);
 	signal distancia2, distancia1, distancia0: std_logic_vector(3 downto 0);
-	signal angulo2, angulo1, angulo0: std_logic_vector(3 downto 0);
 	signal posicao, estado_hcsr04, estado_tx_sonar, estado_tx, estado_rx: std_logic_vector(3 downto 0);
 	signal estado_sonar: std_logic_vector(3 downto 0);
-	signal mux0, mux1, mux2, mux3, mux4, mux5 : std_logic_vector(3 downto 0);
 begin
 
 	U1_FD: sonar_fd 
@@ -106,20 +97,16 @@ begin
 			s_conta, 
 			s_transmitir, 
 			s_medir, 
+			entrada_serial,
 			echo, 
 			trigger, 
 			pwm,
 			s_pronto_sensor, 
 			s_pronto_servo, 
 			saida_serial, 
-			alerta_proximidade, 
 			distancia2, 
 			distancia1, 
 			distancia0, 
-			angulo2, 
-			angulo1, 
-			angulo0, 
-			posicao, 
 			estado_hcsr04, 
 			estado_tx, 
 			estado_rx, 
@@ -140,19 +127,12 @@ begin
 			s_transmitir, 
 			estado_sonar
 		);
-		
-	-- MUX
-	U3_MUX0: mux_4x1_n port map(distancia0, "0000", "0000", angulo0, sel_mux, mux0);
-	U4_MUX1: mux_4x1_n port map(distancia1, "0000", "0000", angulo1, sel_mux, mux1);
-	U5_MUX2: mux_4x1_n port map(distancia2, estado_rx, "0000", angulo2, sel_mux, mux2);
-	U6_MUX4: mux_4x1_n port map(estado_hcsr04, "0000","0000" ,"0000", sel_mux, mux4);
-	U7_MUX5: mux_4x1_n port map(posicao, estado_tx, estado_tx_sonar, estado_sonar, sel_mux, mux5);
 	
 	-- HEX
-	U9_HEX0:  hex7seg port map(mux0, hex0);
-	U10_HEX1: hex7seg port map(mux1, hex1);
-	U11_HEX2: hex7seg port map(mux2, hex2);
-	U12_HEX3: hex7seg port map("00" & sel_mux, hex3);
-	U13_HEX4: hex7seg port map(mux4, hex4);
-	U14_HEX5: hex7seg port map(mux5, hex5);
+	U9_HEX0:  hex7seg port map(distancia2, hex0);
+	U10_HEX1: hex7seg port map(distancia1, hex1);
+	U11_HEX2: hex7seg port map(distancia0, hex2);
+	U12_HEX3: hex7seg port map(estado_hcsr04, hex3);
+	U13_HEX4: hex7seg port map(estado_tx, hex4);
+	U14_HEX5: hex7seg port map(estado_rx, hex5);
 end architecture;

@@ -7,17 +7,16 @@ entity movimentacao_servomotor is
   port (
     reset : in std_logic;
     clock : in std_logic;
-	 ligar : in std_logic;
-    posicao : out std_logic_vector(2 downto 0);
+	ligar : in std_logic;
+    posicao: in std_logic;
     pwm : out std_logic;
-	 pronto1s: out std_logic
+	pronto1s: out std_logic
   );
 end entity;
 
 architecture circuit of movimentacao_servomotor is
 
   signal s_fim : std_logic;
-  signal s_Q : std_logic_vector(2 downto 0);
   signal s_pwm : std_logic;
 
   component contadorg_m
@@ -51,7 +50,7 @@ architecture circuit of movimentacao_servomotor is
     port (
       clock : in std_logic;
       reset : in std_logic;
-      posicao : in std_logic_vector(2 downto 0);
+      posicao : in std_logic;
       pwm : out std_logic
     );
   end component;
@@ -70,27 +69,13 @@ begin
     open
   );
 
-  cud : contadorg_updown_m generic map(
-    M => 8
-    ) port map(
-    clock,
-    reset,
-    '0',
-    s_fim,
-    s_Q,
-    open,
-    open,
-    open
-  );
-
   cs : controle_servo port map(
     clock,
     reset,
-    s_Q,
+    posicao,
     s_pwm
   );
 
   pwm <= s_pwm;
-  posicao <= s_Q;
   pronto1s <= s_fim;
 end architecture;

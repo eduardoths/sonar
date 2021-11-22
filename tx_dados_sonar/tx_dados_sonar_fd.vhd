@@ -58,7 +58,7 @@ architecture arch of tx_dados_sonar_fd is
 			D1 :     in  std_logic_vector (BITS-1 downto 0);
 			D2 :     in  std_logic_vector (BITS-1 downto 0);
 			D3 :     in  std_logic_vector (BITS-1 downto 0);
-			SEL:     in  std_logic_vector (2 downto 0);
+			SEL:     in  std_logic_vector (1 downto 0);
 			MUX_OUT: out std_logic_vector (BITS-1 downto 0)
 		);
 	end component;
@@ -104,7 +104,7 @@ begin
 			fim	=> j_max
 		);
 	
-	mux: mux_8x1_n
+	mux: mux_4x1_n
 		generic map (BITS => 8)
 		port map (
 			D0			=> s_d2,

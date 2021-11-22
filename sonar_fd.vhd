@@ -8,27 +8,23 @@ entity sonar_fd is
         clock:        			in  std_logic; 
         reset:        			in  std_logic; 
         conta:        			in  std_logic; 
-		  transmitir:   			in  std_logic;
-		  medir:			 			in  std_logic;
+		transmitir:   			in  std_logic;
+		medir:			 		in  std_logic;
+		entrada_serial:			in  std_logic;
         echo:         			in  std_logic; 
         trigger:      			out std_logic;  
         pwm:          			out std_logic; 
-		  pronto_sensor:			out std_logic;
-		  pronto_servo: 			out std_logic;
+		pronto_sensor:			out std_logic;
+		pronto_servo: 			out std_logic;
         saida_serial: 			out std_logic;
-		  alerta_proximidade: 	out std_logic;
-		  -- Depuracao
-		  distancia2:				out std_logic_vector(3 downto 0);	
-		  distancia1:				out std_logic_vector(3 downto 0);
-		  distancia0:				out std_logic_vector(3 downto 0);
-		  angulo2:					out std_logic_vector(3 downto 0);
-		  angulo1:					out std_logic_vector(3 downto 0);
-		  angulo0:					out std_logic_vector(3 downto 0);
-		  posicao:					out std_logic_vector(3 downto 0);
-		  estado_hcsr04:			out std_logic_vector(3 downto 0);
-		  estado_tx:				out std_logic_vector(3 downto 0);
-		  estado_rx:				out std_logic_vector(3 downto 0);
-		  estado_tx_sonar:		out std_logic_vector(3 downto 0)
+		-- Depuracao
+		distancia2:				out std_logic_vector(3 downto 0);	
+		distancia1:				out std_logic_vector(3 downto 0);
+		distancia0:				out std_logic_vector(3 downto 0);
+		estado_hcsr04:			out std_logic_vector(3 downto 0);
+		estado_tx:				out std_logic_vector(3 downto 0);
+		estado_rx:				out std_logic_vector(3 downto 0);
+		estado_tx_sonar:		out std_logic_vector(3 downto 0)
     ); 
 end entity;
 
@@ -38,9 +34,6 @@ architecture estrutural of sonar_fd is
 			clock:           	in  std_logic; 
 			reset:           	in  std_logic; 
 			transmitir:      	in  std_logic; 
-			angulo2:         	in  std_logic_vector(7 downto 0); -- digitos ASCII 
-			angulo1:         	in  std_logic_vector(7 downto 0); -- de angulo 
-			angulo0:         	in  std_logic_vector(7 downto 0); 
 			distancia2:      	in  std_logic_vector(7 downto 0); -- e de distancia  
 			distancia1:      	in  std_logic_vector(7 downto 0); 
 			distancia0:      	in  std_logic_vector(7 downto 0); 
@@ -72,7 +65,7 @@ architecture estrutural of sonar_fd is
         clock:         	in  std_logic;  
         reset:         	in  std_logic; 
         ligar:   	 	  	in  std_logic;
-        posicao:       	out std_logic_vector (2 downto 0);
+        posicao:       	in  std_logic;
         pwm:           	out std_logic; 
 		  pronto1s:		  	out std_logic
 		);
@@ -95,23 +88,50 @@ architecture estrutural of sonar_fd is
         saida   : out std_logic_vector(23 downto 0)
 		);
 	end component;
+
+	component comandos is
+		port (
+			reset:      in  std_logic;
+			comando:    in  std_logic_vector(7 downto 0);
+			aberto:     out std_logic;
+			manual:     out std_logic;
+			inverter:   out std_logic
+		);
+	end component;
+
+	component rx_serial_8N2
+        port ( 
+            clock:         in  std_logic;  
+            reset:         in  std_logic; 
+            dado_serial:   in  std_logic; 
+            recebe_dado:   in  std_logic; 
+            pronto_rx:     out std_logic; 
+            tem_dado:      out std_logic; 
+            dado_recebido: out std_logic_vector (7 downto 0); 
+            db_estado:     out std_logic_vector (3 downto 0)  -- estado da UC 
+        ); 
+    end component; 
   
-  signal s_angulo2, s_angulo1, s_angulo0: std_logic_vector(7 downto 0);
   signal s_distancia1, s_distancia0, s_distancia2: std_logic_vector(7 downto 0);
 
   	signal s_medida : std_logic_vector(11 downto 0);
 	signal s_rom: std_logic_vector(23 downto 0);
-	signal s_posicao: std_logic_vector(2 downto 0);
+	signal s_posicao: std_logic;
+
+	--
+	signal s_abre, s_manual, s_inverter: std_logic;
+	signal s_dado_recebido: std_logic_vector(7 downto 0);
+	signal s_proximo: std_logic;
 begin
+	with s_manual select s_posicao <=
+		s_inverter xor s_abre when '1',
+		s_proximo when others;
 
 	U1_TX: tx_dados_sonar 
 		port map (
 			clock, 
 			reset, 
 			transmitir, 
-			s_angulo2, 
-			s_angulo1, 
-			s_angulo0,
 			s_distancia2, 
 			s_distancia1, 
 			s_distancia0, 
@@ -121,7 +141,7 @@ begin
 			open,
 			estado_tx_sonar,
 			estado_tx,
-			estado_rx
+			open
 		);						  
 	
 	U1_IH: interface_hcsr04 
@@ -145,21 +165,32 @@ begin
 			pwm, 
 			pronto_servo
 		);
-																  
-				
-	U3_ROM: rom_8x24 port map(s_posicao, s_rom);
 	
+	registrador_comandos : comandos port map (
+		reset     => reset,
+		comando   => s_dado_recebido,
+		aberto    => s_abre,
+		manual    => s_manual,
+		inverter  => s_inverter
+	  );
+	  
+	  recepcao: rx_serial_8N2 port map(
+		clock           => clock,
+		reset           => reset,
+		dado_serial     => entrada_serial,
+		recebe_dado     => '1',
+		pronto_rx       => open,
+		tem_dado        => open,
+		dado_recebido   => s_dado_recebido,
+		db_estado       => estado_rx
+	  );
+																  	
 	-- distancia
 	s_distancia0 <= x"3" & s_medida(3 downto 0);
 	s_distancia1 <= x"3" & s_medida(7 downto 4);
 	s_distancia2 <= x"3" & s_medida(11 downto 8);
-	
-	-- angulo
-	s_angulo2 <= s_rom(23 downto 16);
-	s_angulo1 <= s_rom(15 downto 8);
-	s_angulo0 <= s_rom(7 downto 0);
 															
-	alerta_proximidade <= 
+	s_proximo <= 
 		'1' when (s_distancia1 = "00110001" or s_distancia1 = "00110000") and s_distancia2 = "00110000" 
 		else '0';
 	
@@ -167,8 +198,4 @@ begin
 	distancia2 <= s_distancia2(3 downto 0); 
 	distancia1 <= s_distancia1(3 downto 0);
 	distancia0 <= s_distancia0(3 downto 0);
-	angulo2 <= s_angulo2(3 downto 0);
-	angulo1 <= s_angulo1(3 downto 0);
-	angulo0 <= s_angulo0(3 downto 0);
-	posicao <= '0' & s_posicao;
 end architecture;
