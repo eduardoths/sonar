@@ -27,6 +27,7 @@ architecture estrutural of sonar is
 		port( 
 			clock:        			in  std_logic; 
 			reset:        			in  std_logic; 
+			zera:					in  std_logic;
 			conta:        			in  std_logic; 
 			transmitir:   			in  std_logic;
 			medir:			 		in  std_logic;
@@ -92,7 +93,8 @@ begin
 
 	U1_FD: sonar_fd 
 		port map (
-			clock, 
+			clock,
+			reset,
 			s_zera, 
 			s_conta, 
 			s_transmitir, 
@@ -129,9 +131,9 @@ begin
 		);
 	
 	-- HEX
-	U9_HEX0:  hex7seg port map(distancia2, hex0);
+	U9_HEX0:  hex7seg port map(distancia0, hex0);
 	U10_HEX1: hex7seg port map(distancia1, hex1);
-	U11_HEX2: hex7seg port map(distancia0, hex2);
+	U11_HEX2: hex7seg port map(distancia2, hex2);
 	U12_HEX3: hex7seg port map(estado_hcsr04, hex3);
 	U13_HEX4: hex7seg port map(estado_tx, hex4);
 	U14_HEX5: hex7seg port map(estado_rx, hex5);

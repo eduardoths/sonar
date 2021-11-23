@@ -64,7 +64,7 @@ begin
 
 			when wait0 =>     
 				if pronto_servo='1' then
-					Eprox <= mede;
+					Eprox <= preparacao;
 				else
 					Eprox <= wait0;
 				end if;

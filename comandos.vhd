@@ -19,7 +19,7 @@ begin
     process (reset, comando)
     begin
 		if reset = '1' then
-				s_aberto <= '0';
+			s_aberto <= '0';
             s_manual <= '0';
             s_inverter <= '0';
         else
@@ -32,7 +32,7 @@ begin
             elsif comando = x"4D" then -- M: manual
                 s_manual <= '1';
             elsif comando = x"69" then -- i: inverter
-                s_inverter <= not s_inverter; 
+                s_inverter <= not s_inverter;
             end if;
         end if;
     end process;

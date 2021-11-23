@@ -7,6 +7,7 @@ entity sonar_fd is
     port( 
         clock:        			in  std_logic; 
         reset:        			in  std_logic; 
+		zera:					in  std_logic;
         conta:        			in  std_logic; 
 		transmitir:   			in  std_logic;
 		medir:			 		in  std_logic;
@@ -147,7 +148,7 @@ begin
 	U1_IH: interface_hcsr04 
 		port map (
 			clock, 
-			reset, 
+			zera, 
 			medir, 
 			echo,
 			trigger, 
