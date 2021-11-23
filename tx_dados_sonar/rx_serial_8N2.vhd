@@ -11,15 +11,26 @@ entity rx_serial_8N2 is
     recebe_dado       : in std_logic;
     pronto_rx         : out std_logic;
     tem_dado          : out std_logic;
-	 dado_recebido		 : out std_logic_vector (7 downto 0);
+    dado_recebido     : out std_logic_vector (7 downto 0);
     db_estado         : out std_logic_vector (3 downto 0)
   );
 end entity;
 
 architecture rx_serial_8N2_architecture of rx_serial_8N2 is
+  component contadorg_m
+    generic (
+      constant M : integer
+    );
+    port (
+      clock, zera_as, zera_s, conta : in std_logic;
+      Q                             : out std_logic_vector(natural(ceil(log2(real(M)))) - 1 downto 0);
+      fim, meio                     : out std_logic
+    );
+  end component;
+
   component rx_serial_8N2_uc
     port (
-      clock, reset, dado, fim, recebe_dado, tick                       : in std_logic;
+      clock, reset, dado, tick, fim, recebe_dado                       : in std_logic;
       limpa, carrega, zera, desloca, conta, registra, pronto, tem_dado : out std_logic;
       db_estado                                                        : out std_logic_vector(3 downto 0)
     );
@@ -35,28 +46,37 @@ architecture rx_serial_8N2_architecture of rx_serial_8N2 is
       Q                                              : out std_logic_vector(3 downto 0)
     );
   end component;
-	component contadorg_m is
-	  generic (
-		 constant M : integer := 50 -- modulo do contador
-	  );
-	  port (
-		 clock, zera_as, zera_s, conta : in std_logic;
-		 Q                             : out std_logic_vector (natural(ceil(log2(real(M)))) - 1 downto 0);
-		 fim, meio                     : out std_logic
-	  );
-	end component;
 
-	signal s_estado: std_logic_vector(3 downto 0);
-	signal limpa_uc, carrega_uc, zera_uc, desloca_uc, conta_uc, registra_uc, pronto_fd : std_logic;
-	signal s_tick : std_logic;
+  component hex7seg
+    port (
+      hexa : in std_logic_vector(3 downto 0);
+      sseg : out std_logic_vector(6 downto 0)
+    );
+  end component;
+
+  signal s_estado                                                                            : std_logic_vector(3 downto 0);
+  signal s_tick, limpa_uc, carrega_uc, zera_uc, desloca_uc, conta_uc, registra_uc, pronto_fd : std_logic;
+
 begin
+  contador : contadorg_m generic map(
+    M => 5208
+    ) port map (
+    clock   => clock,
+    zera_as => '0',
+    zera_s  => zera_uc,
+    conta   => '1',
+    Q       => open,
+    fim     => open,
+    meio    => s_tick
+  );
+
   uc : rx_serial_8N2_uc port map(
     clock       => clock,
     reset       => reset,
     dado        => dado_serial,
+    tick        => s_tick,
     fim         => pronto_fd,
     recebe_dado => recebe_dado,
-	 tick			 => s_tick,
     limpa       => limpa_uc,
     carrega     => carrega_uc,
     zera        => zera_uc,
@@ -83,19 +103,6 @@ begin
     pronto       => pronto_fd,
     Q            => open
   );
- 
-	contador: contadorg_m 
-		generic map(M => 11) 
-		port map (
-			clock   => clock,
-			zera_as =>'0',
-			zera_s  => zera_uc,
-			conta   =>'1',
-			Q       => open,
-			fim     => open,
-			meio    => s_tick
-		);
 
-
-  db_estado 		<= s_estado;
+  db_estado <= s_estado;
 end architecture;
