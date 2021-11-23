@@ -68,9 +68,9 @@ architecture test of projeto_1_rx_tb is
         (
             (1, x"61"),	 -- "a" - abre
             (2, x"66"),	 -- "f" - fecha
-            (3, x"6A"),	 -- "i" - inverte
-            (4, x"6A"),	 -- "i" - inverte
-            (5, x"6D"),	 -- "m" - manual
+            (3, x"69"),	 -- "i" - inverte
+            (4, x"69"),	 -- "i" - inverte
+            (5, x"4D"),	 -- "m" - manual
             (6, x"41")	 -- "A" - automático
         );
     signal larguraPulso: time := 1 ns;
@@ -140,6 +140,7 @@ begin
             aux_tx_partida <= '1';
 
             wait until aux_tx_pronto='1' for 1 ms;
+            wait for 1 ms;
             
             
             assert false report "Fim do caso " & integer'image(casos_teste(i).id) severity note;
